@@ -10,6 +10,9 @@
         android:name="com.example.newsapp.ui.details.DetailsFragment"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details">
+        <argument
+            android:name="article"
+            app:argType="com.example.newsapp.models.Article" />
     </fragment>
 
     <fragment
@@ -20,10 +23,10 @@
         <action
             android:id="@+id/action_favoriteFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
-            app:enterAnim="@android:anim/slide_out_right"
+            app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -34,10 +37,10 @@
         <action
             android:id="@+id/action_mainFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
-            app:enterAnim="@android:anim/slide_out_right"
+            app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
     <fragment
@@ -46,12 +49,12 @@
         android:label="fragment_search"
         tools:layout="@layout/fragment_search">
         <action
-            android:id="@+id/action_searchFragment_to_detailsFragment2"
+            android:id="@+id/action_searchFragment_to_detailsFragment"
             app:destination="@id/detailsFragment"
-            app:enterAnim="@android:anim/slide_out_right"
+            app:enterAnim="@android:anim/slide_in_left"
             app:exitAnim="@android:anim/slide_out_right"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
     </fragment>
 
 </navigation>

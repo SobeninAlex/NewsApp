@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">NewsApp</string>
+    <string name="popular_news">Popular News</string>
+    <string name="search">Search</string>
+    <string name="search_hint">what are we looking for</string>
+    <string name="description">Description</string>
+    <string name="description_text_example">Recently, Twitter announced that it has entered into a definitive agreement to be acquired by an entity wholly owned by Musk for $54.20 per share in cash in a transaction valued at nearly $44 billion.</string>
+    <string name="title_text_example">Musk invited to UK Parliament to discuss $44 billion Twitter buyout</string>
+    <string name="visit_site">Visit site</string>
+    <string name="the_device_doesn_t_have_any_browser">The device doesn\'t have any browser</string>
+    <string name="favorites">Favorites</string>
 </resources>
