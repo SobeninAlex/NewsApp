@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.newsapp.data.api.NewsService
 import com.example.newsapp.models.Article
-import com.example.newsapp.models.NewsResponse
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class NewsPagingSource @Inject constructor (
@@ -12,23 +12,26 @@ class NewsPagingSource @Inject constructor (
 ) : PagingSource<Int, Article>() {
 
     override fun getRefreshKey(state: PagingState<Int, Article>): Int? {
-        return state.anchorPosition
+        val anchorPosition = state.anchorPosition ?: return null
+        val page = state.closestPageToPosition(anchorPosition) ?: return null
+        return page.prevKey?.plus(1) ?: page.nextKey?.minus(1)
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
-        return try {
-            val page = params.key ?: 1
-            val response = newsService.getTopHeadlines(page = page).body()?.articles ?: emptyList()
-            val nextKey = if (response.isEmpty()) null else response.size.plus(page).plus(1)
-            val prevKey = if (page == 1) null else response.size.minus(1)
-            LoadResult.Page(
-                data = response,
+        val page = params.key ?: 1
+        val pageSize = params.loadSize.coerceAtMost(100)
+        val response = newsService.getTopHeadlinesPaging(page = page, pageSize = pageSize)
+        if (response.isSuccessful) {
+            val articles = checkNotNull(response.body()).articles
+            val nextKey = if (articles.size < pageSize) null else page + 1
+            val prevKey = if (page == 1) null else page - 1
+            return LoadResult.Page(
+                data = articles,
                 nextKey = nextKey,
                 prevKey = prevKey
             )
-
-        } catch (ex: Exception) {
-            return LoadResult.Error(ex)
+        } else {
+            return LoadResult.Error(HttpException(response))
         }
     }
 

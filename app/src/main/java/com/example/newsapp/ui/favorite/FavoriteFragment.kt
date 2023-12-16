@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.newsapp.databinding.FragmentFavoriteBinding
+import com.example.newsapp.ui.adapters.ArticleAdapter
+import com.example.newsapp.ui.adapters.LoadStateAdapter
 import com.example.newsapp.ui.adapters.NewsAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +20,7 @@ class FavoriteFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<FavoriteViewModel>()
-    private lateinit var newsAdapter: NewsAdapter
+    private lateinit var articleAdapter: ArticleAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,17 +39,17 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter { article ->
+        articleAdapter = ArticleAdapter { article ->
             val action = FavoriteFragmentDirections
                 .actionFavoriteFragmentToDetailsFragment(article)
             findNavController().navigate(action)
         }
-        binding.recyclerView.adapter = newsAdapter
+        binding.recyclerView.adapter = articleAdapter
     }
 
     private fun viewModelObserver() {
         viewModel.allFavoriteArticles.observe(viewLifecycleOwner) { articles ->
-            newsAdapter.differ.submitList(articles)
+            articleAdapter.differ.submitList(articles)
         }
     }
 

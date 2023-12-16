@@ -5,15 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import com.example.newsapp.databinding.FragmentMainBinding
 import com.example.newsapp.models.Article
+import com.example.newsapp.ui.adapters.LoadStateAdapter
 import com.example.newsapp.ui.adapters.NewsAdapter
 import com.example.newsapp.utils.Constants.Companion.TAG
 import com.example.newsapp.utils.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
@@ -46,34 +52,37 @@ class MainFragment : Fragment() {
                 .actionMainFragmentToDetailsFragment(article)
             findNavController().navigate(action)
         }
-        binding.recyclerView.adapter = newsAdapter
+        binding.recyclerView.adapter = newsAdapter.withLoadStateFooter(LoadStateAdapter())
 
-//        newsAdapter.setOnReachEndListener(object : NewsAdapter.OnReachEndListener {
-//            override fun onReachEnd() {
-//                viewModel.getNews()
-//            }
-//        })
+        newsAdapter.addLoadStateListener { state ->
+            binding.recyclerView.isVisible = state.refresh != LoadState.Loading
+            binding.progressBar.isVisible = state.refresh == LoadState.Loading
+        }
+
     }
 
     private fun viewModelObserver() {
-        viewModel.news.observe(viewLifecycleOwner) { response ->
-            when(response) {
-                is NetworkResult.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is NetworkResult.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    response.data?.let {
-                        newsAdapter.differ.submitList(it.articles)
-                    }
-                }
-                is NetworkResult.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    response.data?.let {
-                        Log.d(TAG, "MainFragment error: $it")
-                    }
-                }
-            }
+//        viewModel.news.observe(viewLifecycleOwner) { response ->
+//            when(response) {
+//                is NetworkResult.Loading -> {
+//                    binding.progressBar.visibility = View.VISIBLE
+//                }
+//                is NetworkResult.Success -> {
+//                    binding.progressBar.visibility = View.INVISIBLE
+//                    response.data?.let {
+//                        newsAdapter.differ.submitList(it.articles)
+//                    }
+//                }
+//                is NetworkResult.Error -> {
+//                    binding.progressBar.visibility = View.INVISIBLE
+//                    response.data?.let {
+//                        Log.d(TAG, "MainFragment error: $it")
+//                    }
+//                }
+//            }
+//        }
+        lifecycleScope.launch {
+            viewModel.pagingNews.collectLatest(newsAdapter::submitData)
         }
 
     }
