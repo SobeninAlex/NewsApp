@@ -3,6 +3,7 @@ package com.example.newsapp.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.newsapp.data.NewsRepository
 import com.example.newsapp.models.NewsResponse
@@ -19,13 +20,13 @@ class MainViewModel @Inject constructor(
     private val _news = MutableLiveData<NetworkResult<NewsResponse>>()
     val news: LiveData<NetworkResult<NewsResponse>> get() = _news
 
-    var newsPage = 1
+    private var newsPage = 1
 
     init {
         getNews()
     }
 
-    private fun getNews() {
+    fun getNews() {
         viewModelScope.launch {
             _news.postValue(NetworkResult.Loading())
             val response = newsRepository.getNews(page = newsPage)
@@ -37,6 +38,7 @@ class MainViewModel @Inject constructor(
                 _news.postValue(NetworkResult.Error(message = response.message()))
             }
         }
+//        newsPage++
     }
 
 

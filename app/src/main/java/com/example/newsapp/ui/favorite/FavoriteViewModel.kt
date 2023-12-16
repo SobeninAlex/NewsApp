@@ -11,6 +11,6 @@ class FavoriteViewModel @Inject constructor(
     private val newsRepository: NewsRepository
 ) : ViewModel() {
 
-    val allArticles = newsRepository.getAllFavouriteArticles().asLiveData()
+    val allFavoriteArticles = newsRepository.getAllFavouriteArticles().asLiveData()
 
 }

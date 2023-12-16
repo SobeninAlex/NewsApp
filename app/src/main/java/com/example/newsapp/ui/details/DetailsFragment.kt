@@ -47,13 +47,23 @@ class DetailsFragment : Fragment() {
             launchBrowser(article)
         }
 
-        clickListeners()
+        viewModelObservers()
 
     }
 
-    private fun clickListeners() {
-        binding.iconHeart.setOnClickListener {
-            viewModel.saveArticle(article)
+    private fun viewModelObservers() {
+        viewModel.getAllArticle.observe(viewLifecycleOwner) { listArticles ->
+            if (listArticles.contains(article)) {
+                binding.iconHeart.setImageResource(R.drawable.icon_favorite_added)
+                binding.iconHeart.setOnClickListener {
+                    viewModel.deleteArticle(article)
+                }
+            } else {
+                binding.iconHeart.setImageResource(R.drawable.icon_favorite)
+                binding.iconHeart.setOnClickListener {
+                    viewModel.saveArticle(article)
+                }
+            }
         }
     }
 

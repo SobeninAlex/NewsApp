@@ -9,7 +9,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.newsapp.databinding.FragmentFavoriteBinding
 import com.example.newsapp.ui.adapters.NewsAdapter
-import com.example.newsapp.ui.details.DetailsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -47,7 +46,7 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun viewModelObserver() {
-        viewModel.allArticles.observe(viewLifecycleOwner) { articles ->
+        viewModel.allFavoriteArticles.observe(viewLifecycleOwner) { articles ->
             newsAdapter.differ.submitList(articles)
         }
     }

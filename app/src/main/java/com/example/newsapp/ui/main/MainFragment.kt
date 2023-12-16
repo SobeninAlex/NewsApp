@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.newsapp.databinding.FragmentMainBinding
+import com.example.newsapp.models.Article
 import com.example.newsapp.ui.adapters.NewsAdapter
 import com.example.newsapp.utils.Constants.Companion.TAG
 import com.example.newsapp.utils.NetworkResult
@@ -46,6 +47,12 @@ class MainFragment : Fragment() {
             findNavController().navigate(action)
         }
         binding.recyclerView.adapter = newsAdapter
+
+//        newsAdapter.setOnReachEndListener(object : NewsAdapter.OnReachEndListener {
+//            override fun onReachEnd() {
+//                viewModel.getNews()
+//            }
+//        })
     }
 
     private fun viewModelObserver() {
@@ -68,6 +75,7 @@ class MainFragment : Fragment() {
                 }
             }
         }
+
     }
 
 }

@@ -19,7 +19,7 @@ class SearchViewModel @Inject constructor(
     private val _newsSearch = MutableLiveData<NetworkResult<NewsResponse>>()
     val newsSearch: LiveData<NetworkResult<NewsResponse>> get() = _newsSearch
 
-    var newsPage = 1
+    private var newsPage = 1
 
     fun searchNews(searchQuery: String) {
         viewModelScope.launch {

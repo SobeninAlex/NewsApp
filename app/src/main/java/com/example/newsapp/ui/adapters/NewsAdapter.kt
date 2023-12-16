@@ -6,12 +6,19 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.newsapp.data.NewsRepository
 import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.models.Article
 
 class NewsAdapter(
-    private val clickListener: (Article) -> Unit
+    private val clickListener: (Article) -> Unit,
 ) : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
+
+//    private lateinit var onReachEndListener: OnReachEndListener
+//
+//    fun setOnReachEndListener(onReachEndListener: OnReachEndListener) {
+//        this.onReachEndListener = onReachEndListener
+//    }
 
     inner class NewsViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(article: Article) {
@@ -50,10 +57,20 @@ class NewsAdapter(
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         val item = differ.currentList[position]
+
         holder.itemView.setOnClickListener {
             clickListener(item)
         }
+
         holder.bind(item)
+
+//        if (position >= differ.currentList.size - 5) {
+//            onReachEndListener.onReachEnd()
+//        }
     }
+
+//    interface OnReachEndListener {
+//        fun onReachEnd()
+//    }
 
 }
