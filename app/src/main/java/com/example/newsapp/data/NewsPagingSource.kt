@@ -19,7 +19,7 @@ class NewsPagingSource @Inject constructor (
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val page = params.key ?: 1
-        val pageSize = params.loadSize.coerceAtMost(100)
+        val pageSize = params.loadSize
         val response = newsService.getTopHeadlinesPaging(page = page, pageSize = pageSize)
         if (response.isSuccessful) {
             val articles = checkNotNull(response.body()).articles
