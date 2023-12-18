@@ -55,6 +55,7 @@
         style="?attr/progressBarStyle"
         android:background="@android:color/transparent"
         android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@id/popular_news_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

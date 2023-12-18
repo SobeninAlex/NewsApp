@@ -1,7 +1,5 @@
 package com.example.newsapp.ui.details
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -17,7 +15,7 @@ class DetailsViewModel @Inject constructor(
     private val newsRepository: NewsRepository
 ) : ViewModel() {
 
-    val getAllArticle = newsRepository.getAllFavouriteArticles().asLiveData()
+    val getAllFavoriteArticle = newsRepository.getAllFavouriteArticles().asLiveData()
 
     fun saveArticle(article: Article) =
         viewModelScope.launch(Dispatchers.IO) {

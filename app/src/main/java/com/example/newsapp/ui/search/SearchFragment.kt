@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentSearchBinding
+import com.example.newsapp.ui.adapters.ArticleAdapter
 import com.example.newsapp.ui.adapters.NewsAdapter
 import com.example.newsapp.ui.main.MainFragmentDirections
 import com.example.newsapp.utils.Constants.Companion.TAG
@@ -28,7 +29,7 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<SearchViewModel>()
-    private lateinit var newsAdapter: NewsAdapter
+    private lateinit var newsAdapter: ArticleAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,7 +49,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter { article ->
+        newsAdapter = ArticleAdapter { article ->
             val action = SearchFragmentDirections
                 .actionSearchFragmentToDetailsFragment(article)
             findNavController().navigate(action)

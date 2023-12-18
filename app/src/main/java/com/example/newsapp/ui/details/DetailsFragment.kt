@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.newsapp.R
@@ -47,12 +48,16 @@ class DetailsFragment : Fragment() {
             launchBrowser(article)
         }
 
+        binding.iconBack.setOnClickListener {
+            findNavController().navigateUp()
+        }
+
         viewModelObservers()
 
     }
 
     private fun viewModelObservers() {
-        viewModel.getAllArticle.observe(viewLifecycleOwner) { listArticles ->
+        viewModel.getAllFavoriteArticle.observe(viewLifecycleOwner) { listArticles ->
             if (listArticles.contains(article)) {
                 binding.iconHeart.setImageResource(R.drawable.icon_favorite_added)
                 binding.iconHeart.setOnClickListener {
