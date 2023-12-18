@@ -73,16 +73,15 @@ class DetailsFragment : Fragment() {
     }
 
     private fun bindArticle(article: Article) {
-        article.title?.let {
-            binding.title.text = it
+        with(binding) {
+            Glide.with(this@DetailsFragment)
+                .load(article.urlToImage)
+                .placeholder(R.drawable.icon_newspaper)
+                .into(image)
+            image.clipToOutline = true
+            title.text = article.title
+            description.text = article.description
         }
-        article.description?.let {
-            binding.description.text = it
-        }
-        article.urlToImage?.let {
-            Glide.with(this).load(it).into(binding.image)
-        }
-        binding.image.clipToOutline = true
     }
 
     private fun launchBrowser(article: Article) {

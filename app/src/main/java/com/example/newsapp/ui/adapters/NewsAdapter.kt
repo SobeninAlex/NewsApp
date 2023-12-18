@@ -52,6 +52,7 @@ class NewsAdapter(
 
             Glide.with(articleImage.context)
                 .load(article.urlToImage)
+                .placeholder(R.drawable.icon_newspaper)
                 .into(articleImage)
             articleImage.clipToOutline = true
 
