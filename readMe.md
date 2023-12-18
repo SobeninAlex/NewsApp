@@ -5,7 +5,8 @@
 
 ### Stack
 - MVVM
-- Navigation fragment
+- Fragment
+- Navigation Components
 - Kotlin Coroutines
 - Coroutine.Flow
 - Room
