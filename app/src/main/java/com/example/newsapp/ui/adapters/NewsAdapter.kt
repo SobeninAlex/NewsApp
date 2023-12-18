@@ -1,76 +1,86 @@
 package com.example.newsapp.ui.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.AsyncListDiffer
+import android.widget.ImageView
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.newsapp.data.NewsRepository
+import com.example.newsapp.R
 import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.models.Article
 
 class NewsAdapter(
-    private val clickListener: (Article) -> Unit,
-) : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
+    private val listener: NewsActionClickListener
+) : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(ArticleDiffItemCallback), View.OnClickListener {
 
-//    private lateinit var onReachEndListener: OnReachEndListener
-//
-//    fun setOnReachEndListener(onReachEndListener: OnReachEndListener) {
-//        this.onReachEndListener = onReachEndListener
-//    }
+    lateinit var onImageListener: OnImageListener
 
-    inner class NewsViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(article: Article) {
-            with(binding) {
-                Glide.with(itemView)
-                    .load(article.urlToImage)
-                    .into(articleImage)
-                articleImage.clipToOutline = true
-                articleDate.text = article.publishedAt
-                articleTitle.text = article.title
+    override fun onClick(view: View) {
+        val article = view.tag as Article
+        when (view.id) {
+            R.id.icon_heart_item -> {
+                listener.onFavoriteClick(article)
+                notifyDataSetChanged()
+            }
+            else -> {
+                listener.onArticleClick(article)
             }
         }
     }
 
-    private val callback = object : DiffUtil.ItemCallback<Article>() {
-        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem.url == newItem.url
-        }
-
-        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-    val differ = AsyncListDiffer(this, callback)
+    inner class NewsViewHolder(val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
-        return NewsViewHolder(
-            ItemArticleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
-    }
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemArticleBinding.inflate(inflater, parent, false)
 
-    override fun getItemCount(): Int {
-        return differ.currentList.size
+        binding.root.setOnClickListener(this)
+        binding.iconHeartItem.setOnClickListener(this)
+
+        return NewsViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        val item = differ.currentList[position]
+        val article = getItem(position)!!
 
-        holder.itemView.setOnClickListener {
-            clickListener(item)
+        with(holder.binding) {
+            holder.itemView.tag = article
+            iconHeartItem.tag = article
+
+            Glide.with(articleImage.context)
+                .load(article.urlToImage)
+                .into(articleImage)
+            articleImage.clipToOutline = true
+
+            articleDate.text = article.publishedAt
+            articleTitle.text = article.title
+
+            onImageListener.setImage(article, iconHeartItem)
+
         }
-
-        holder.bind(item)
-
-//        if (position >= differ.currentList.size - 5) {
-//            onReachEndListener.onReachEnd()
-//        }
     }
 
-//    interface OnReachEndListener {
-//        fun onReachEnd()
-//    }
+}
+
+private object ArticleDiffItemCallback : DiffUtil.ItemCallback<Article>() {
+    override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+        return oldItem.url == newItem.url
+    }
+
+    override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+        return oldItem == newItem
+    }
+}
+
+interface OnImageListener {
+    fun setImage(article: Article, imageView: ImageView)
+}
+
+interface NewsActionClickListener {
+    fun onFavoriteClick(article: Article)
+    fun onArticleClick(article: Article)
 
 }

@@ -22,4 +22,12 @@ interface NewsService {
         @Query("apiKey") apiKey: String = API_KEY
     ): Response<NewsResponse>
 
+    @GET("/v2/top-headlines")
+    suspend fun getTopHeadlinesPaging(
+        @Query("apiKey") apiKey: String = API_KEY,
+        @Query("country") countryCode: String = "us",
+        @Query("page") page: Int = 1,
+        @Query("pageSize") pageSize: Int = 10
+    ): Response<NewsResponse>
+
 }

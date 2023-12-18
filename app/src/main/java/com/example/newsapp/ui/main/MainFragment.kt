@@ -1,19 +1,26 @@
 package com.example.newsapp.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
+import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentMainBinding
 import com.example.newsapp.models.Article
+import com.example.newsapp.ui.adapters.LoadStateAdapter
+import com.example.newsapp.ui.adapters.NewsActionClickListener
 import com.example.newsapp.ui.adapters.NewsAdapter
-import com.example.newsapp.utils.Constants.Companion.TAG
-import com.example.newsapp.utils.NetworkResult
+import com.example.newsapp.ui.adapters.OnImageListener
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
@@ -23,6 +30,7 @@ class MainFragment : Fragment() {
 
     private val viewModel by viewModels<MainViewModel>()
     private lateinit var newsAdapter: NewsAdapter
+    private lateinit var articleList: List<Article>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,44 +46,53 @@ class MainFragment : Fragment() {
 
         initAdapter()
         viewModelObserver()
+
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter { article ->
-            val action = MainFragmentDirections
-                .actionMainFragmentToDetailsFragment(article)
-            findNavController().navigate(action)
-        }
-        binding.recyclerView.adapter = newsAdapter
+        newsAdapter = NewsAdapter(object : NewsActionClickListener {
+            override fun onFavoriteClick(article: Article) {
+                if (articleList.contains(article)) {
+                    viewModel.deleteArticle(article)
+                } else {
+                    viewModel.saveArticle(article)
+                }
+            }
+            override fun onArticleClick(article: Article) {
+                val action = MainFragmentDirections
+                    .actionMainFragmentToDetailsFragment(article)
+                findNavController().navigate(action)
+            }
+        })
 
-//        newsAdapter.setOnReachEndListener(object : NewsAdapter.OnReachEndListener {
-//            override fun onReachEnd() {
-//                viewModel.getNews()
-//            }
-//        })
+        binding.recyclerView.adapter = newsAdapter.withLoadStateFooter(LoadStateAdapter())
+
+        newsAdapter.addLoadStateListener { state ->
+            binding.recyclerView.isVisible = state.refresh != LoadState.Loading
+            binding.progressBar.isVisible = state.refresh == LoadState.Loading
+        }
     }
 
+
+
+
     private fun viewModelObserver() {
-        viewModel.news.observe(viewLifecycleOwner) { response ->
-            when(response) {
-                is NetworkResult.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-                is NetworkResult.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    response.data?.let {
-                        newsAdapter.differ.submitList(it.articles)
-                    }
-                }
-                is NetworkResult.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    response.data?.let {
-                        Log.d(TAG, "MainFragment error: $it")
+        lifecycleScope.launch {
+            viewModel.pagingNews.collectLatest(newsAdapter::submitData)
+        }
+
+        viewModel.getAllFavoriteArticle.observe(viewLifecycleOwner) { list ->
+            newsAdapter.onImageListener = object : OnImageListener {
+                override fun setImage(article: Article, imageView: ImageView) {
+                    if (list.contains(article)) {
+                        imageView.setImageResource(R.drawable.icon_favorite_added)
+                    } else {
+                        imageView.setImageResource(R.drawable.icon_heart)
                     }
                 }
             }
+            articleList = list
         }
-
     }
 
 }
