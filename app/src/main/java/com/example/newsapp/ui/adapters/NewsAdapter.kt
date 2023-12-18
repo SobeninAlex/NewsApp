@@ -1,19 +1,19 @@
 package com.example.newsapp.ui.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.newsapp.data.NewsRepository
 import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.models.Article
 
 class NewsAdapter(
-    private val clickListener: (Article) -> Unit,
-) : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(ArticleDiffItemCallback) {
+    private val listener: OnClickListener
+) : PagingDataAdapter<Article, NewsAdapter.NewsViewHolder>(ArticleDiffItemCallback), View.OnClickListener {
 
     inner class NewsViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(article: Article) {
@@ -38,13 +38,22 @@ class NewsAdapter(
 
     override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
         val item = getItem(position)!!
-
-        holder.itemView.setOnClickListener {
-            clickListener(item)
-        }
-
         holder.bind(item)
     }
+
+    interface OnClickListener {
+        fun onClickIcon(article: Article)
+        fun onClickItem(article: Article)
+    }
+
+    override fun onClick(v: View?) {
+        TODO("Not yet implemented")
+    }
+
+//    override fun onClick(view: View?) {
+//        val article = view?.tag as Article
+//        if ()
+//    }
 
 }
 

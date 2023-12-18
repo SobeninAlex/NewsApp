@@ -52,7 +52,7 @@ class DetailsFragment : Fragment() {
     }
 
     private fun viewModelObservers() {
-        viewModel.getAllArticle.observe(viewLifecycleOwner) { listArticles ->
+        viewModel.getAllFavoriteArticle.observe(viewLifecycleOwner) { listArticles ->
             if (listArticles.contains(article)) {
                 binding.iconHeart.setImageResource(R.drawable.icon_favorite_added)
                 binding.iconHeart.setOnClickListener {

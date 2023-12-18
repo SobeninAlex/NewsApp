@@ -23,33 +23,10 @@ class MainViewModel @Inject constructor(
     private val newsRepository: NewsRepository
 ) : ViewModel() {
 
-    private val _news = MutableLiveData<NetworkResult<NewsResponse>>()
-    val news: LiveData<NetworkResult<NewsResponse>> get() = _news
-
-    private var newsPage = 1
+    val getAllFavoriteArticle = newsRepository.getAllFavouriteArticles().asLiveData()
 
     val pagingNews = newsRepository.getPagingNews()
         .cachedIn(viewModelScope)
         .stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
-
-    init {
-//        getNews()
-    }
-
-//    fun getNews() {
-//        viewModelScope.launch {
-//            _news.postValue(NetworkResult.Loading())
-//            val response = newsRepository.getNews(page = newsPage)
-//            if (response.isSuccessful) {
-//                response.body().let {
-//                    _news.postValue(NetworkResult.Success(data = it))
-//                }
-//            } else {
-//                _news.postValue(NetworkResult.Error(message = response.message()))
-//            }
-//        }
-////        newsPage++
-//    }
-
 
 }

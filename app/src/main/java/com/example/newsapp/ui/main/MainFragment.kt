@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
+import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentMainBinding
 import com.example.newsapp.models.Article
 import com.example.newsapp.ui.adapters.LoadStateAdapter
@@ -58,29 +59,10 @@ class MainFragment : Fragment() {
             binding.recyclerView.isVisible = state.refresh != LoadState.Loading
             binding.progressBar.isVisible = state.refresh == LoadState.Loading
         }
-
     }
 
     private fun viewModelObserver() {
-//        viewModel.news.observe(viewLifecycleOwner) { response ->
-//            when(response) {
-//                is NetworkResult.Loading -> {
-//                    binding.progressBar.visibility = View.VISIBLE
-//                }
-//                is NetworkResult.Success -> {
-//                    binding.progressBar.visibility = View.INVISIBLE
-//                    response.data?.let {
-//                        newsAdapter.differ.submitList(it.articles)
-//                    }
-//                }
-//                is NetworkResult.Error -> {
-//                    binding.progressBar.visibility = View.INVISIBLE
-//                    response.data?.let {
-//                        Log.d(TAG, "MainFragment error: $it")
-//                    }
-//                }
-//            }
-//        }
+
         lifecycleScope.launch {
             viewModel.pagingNews.collectLatest(newsAdapter::submitData)
         }
