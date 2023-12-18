@@ -1,10 +1,10 @@
 package com.example.newsapp.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,9 +15,9 @@ import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentMainBinding
 import com.example.newsapp.models.Article
 import com.example.newsapp.ui.adapters.LoadStateAdapter
+import com.example.newsapp.ui.adapters.NewsActionClickListener
 import com.example.newsapp.ui.adapters.NewsAdapter
-import com.example.newsapp.utils.Constants.Companion.TAG
-import com.example.newsapp.utils.NetworkResult
+import com.example.newsapp.ui.adapters.OnImageListener
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,6 +30,7 @@ class MainFragment : Fragment() {
 
     private val viewModel by viewModels<MainViewModel>()
     private lateinit var newsAdapter: NewsAdapter
+    private lateinit var articleList: List<Article>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,14 +46,25 @@ class MainFragment : Fragment() {
 
         initAdapter()
         viewModelObserver()
+
     }
 
     private fun initAdapter() {
-        newsAdapter = NewsAdapter { article ->
-            val action = MainFragmentDirections
-                .actionMainFragmentToDetailsFragment(article)
-            findNavController().navigate(action)
-        }
+        newsAdapter = NewsAdapter(object : NewsActionClickListener {
+            override fun onFavoriteClick(article: Article) {
+                if (articleList.contains(article)) {
+                    viewModel.deleteArticle(article)
+                } else {
+                    viewModel.saveArticle(article)
+                }
+            }
+            override fun onArticleClick(article: Article) {
+                val action = MainFragmentDirections
+                    .actionMainFragmentToDetailsFragment(article)
+                findNavController().navigate(action)
+            }
+        })
+
         binding.recyclerView.adapter = newsAdapter.withLoadStateFooter(LoadStateAdapter())
 
         newsAdapter.addLoadStateListener { state ->
@@ -61,12 +73,26 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun viewModelObserver() {
 
+
+
+    private fun viewModelObserver() {
         lifecycleScope.launch {
             viewModel.pagingNews.collectLatest(newsAdapter::submitData)
         }
 
+        viewModel.getAllFavoriteArticle.observe(viewLifecycleOwner) { list ->
+            newsAdapter.onImageListener = object : OnImageListener {
+                override fun setImage(article: Article, imageView: ImageView) {
+                    if (list.contains(article)) {
+                        imageView.setImageResource(R.drawable.icon_favorite_added)
+                    } else {
+                        imageView.setImageResource(R.drawable.icon_heart)
+                    }
+                }
+            }
+            articleList = list
+        }
     }
 
 }

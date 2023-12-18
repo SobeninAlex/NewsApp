@@ -12,6 +12,7 @@ import com.example.newsapp.models.Article
 import com.example.newsapp.models.NewsResponse
 import com.example.newsapp.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -28,5 +29,15 @@ class MainViewModel @Inject constructor(
     val pagingNews = newsRepository.getPagingNews()
         .cachedIn(viewModelScope)
         .stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
+
+    fun saveArticle(article: Article) =
+        viewModelScope.launch(Dispatchers.IO) {
+            newsRepository.saveArticle(article)
+        }
+
+    fun deleteArticle(article: Article) =
+        viewModelScope.launch(Dispatchers.IO) {
+            newsRepository.deleteArticle(article)
+        }
 
 }

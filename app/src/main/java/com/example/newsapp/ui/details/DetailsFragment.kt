@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.newsapp.R
@@ -45,6 +46,10 @@ class DetailsFragment : Fragment() {
 
         binding.visitSiteButton.setOnClickListener {
             launchBrowser(article)
+        }
+
+        binding.iconBack.setOnClickListener {
+            findNavController().navigateUp()
         }
 
         viewModelObservers()
