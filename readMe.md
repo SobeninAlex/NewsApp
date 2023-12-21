@@ -1,7 +1,7 @@
 ### NewsApp
 Приложение для просмотра новостей. Используется открытое API newsapi.org.
 
-<img alt="ezgif.com-video-to-gif-converted.gif" src=".files%2Fezgif.com-video-to-gif-converted.gif" width="350"/>
+<img alt="Screen_Recording_20231221_060851_NewsApp.gif" src=".files%2FScreen_Recording_20231221_060851_NewsApp.gif" width="350"/>
 
 ### Stack
 - MVVM
@@ -12,6 +12,7 @@
 - Room
 - Retrofit
 - OkHTTP
+- Paging3
 - Gson
 - Glide
 - Hilt
