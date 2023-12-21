@@ -5,12 +5,17 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentFavoriteBinding
+import com.example.newsapp.models.Article
 import com.example.newsapp.ui.adapters.ArticleAdapter
 import com.example.newsapp.ui.adapters.LoadStateAdapter
+import com.example.newsapp.ui.adapters.NewsActionClickListener
 import com.example.newsapp.ui.adapters.NewsAdapter
+import com.example.newsapp.ui.adapters.OnImageListener
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -20,7 +25,9 @@ class FavoriteFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<FavoriteViewModel>()
+
     private lateinit var articleAdapter: ArticleAdapter
+    private lateinit var articleList: List<Article>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,17 +46,39 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        articleAdapter = ArticleAdapter { article ->
-            val action = FavoriteFragmentDirections
-                .actionFavoriteFragmentToDetailsFragment(article)
-            findNavController().navigate(action)
-        }
+        articleAdapter = ArticleAdapter(object : NewsActionClickListener {
+            override fun onFavoriteClick(article: Article) {
+                if (articleList.contains(article)) {
+                    viewModel.deleteArticle(article)
+                } else {
+                    viewModel.saveArticle(article)
+                }
+            }
+
+            override fun onArticleClick(article: Article) {
+                val action = FavoriteFragmentDirections
+                    .actionFavoriteFragmentToDetailsFragment(article)
+                findNavController().navigate(action)
+            }
+        })
+
         binding.recyclerView.adapter = articleAdapter
+
+        articleAdapter.onImageListener = object : OnImageListener {
+            override fun setImage(article: Article, imageView: ImageView) {
+                if (articleList.contains(article)) {
+                    imageView.setImageResource(R.drawable.icon_favorite_added)
+                } else {
+                    imageView.setImageResource(R.drawable.icon_heart)
+                }
+            }
+        }
     }
 
     private fun viewModelObserver() {
-        viewModel.allFavoriteArticles.observe(viewLifecycleOwner) { articles ->
-            articleAdapter.differ.submitList(articles)
+        viewModel.allFavoriteArticles.observe(viewLifecycleOwner) { list ->
+            articleAdapter.differ.submitList(list)
+            articleList = list
         }
     }
 

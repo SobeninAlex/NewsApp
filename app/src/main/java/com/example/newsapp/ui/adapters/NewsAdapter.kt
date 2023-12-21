@@ -3,7 +3,6 @@ package com.example.newsapp.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -60,7 +59,6 @@ class NewsAdapter(
             articleTitle.text = article.title
 
             onImageListener.setImage(article, iconHeartItem)
-
         }
     }
 
@@ -74,14 +72,4 @@ private object ArticleDiffItemCallback : DiffUtil.ItemCallback<Article>() {
     override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
         return oldItem == newItem
     }
-}
-
-interface OnImageListener {
-    fun setImage(article: Article, imageView: ImageView)
-}
-
-interface NewsActionClickListener {
-    fun onFavoriteClick(article: Article)
-    fun onArticleClick(article: Article)
-
 }

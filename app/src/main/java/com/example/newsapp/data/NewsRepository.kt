@@ -12,8 +12,6 @@ class NewsRepository @Inject constructor(
     private val newsService: NewsService,
     private val articleDao: ArticleDao
 ) {
-    suspend fun getNews(page: Int) =
-        newsService.getTopHeadlines(page = page)
 
     fun getPagingNews() = Pager (
         config = PagingConfig(10),
