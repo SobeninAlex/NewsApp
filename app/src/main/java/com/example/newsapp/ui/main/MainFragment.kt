@@ -73,9 +73,6 @@ class MainFragment : Fragment() {
         }
     }
 
-
-
-
     private fun viewModelObserver() {
         lifecycleScope.launch {
             viewModel.pagingNews.collectLatest(newsAdapter::submitData)

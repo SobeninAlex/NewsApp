@@ -1,9 +1,9 @@
 package com.example.newsapp.ui.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +18,7 @@ class NewsAdapter(
 
     lateinit var onImageListener: OnImageListener
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onClick(view: View) {
         val article = view.tag as Article
         when (view.id) {
@@ -60,7 +61,6 @@ class NewsAdapter(
             articleTitle.text = article.title
 
             onImageListener.setImage(article, iconHeartItem)
-
         }
     }
 
@@ -74,14 +74,4 @@ private object ArticleDiffItemCallback : DiffUtil.ItemCallback<Article>() {
     override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
         return oldItem == newItem
     }
-}
-
-interface OnImageListener {
-    fun setImage(article: Article, imageView: ImageView)
-}
-
-interface NewsActionClickListener {
-    fun onFavoriteClick(article: Article)
-    fun onArticleClick(article: Article)
-
 }

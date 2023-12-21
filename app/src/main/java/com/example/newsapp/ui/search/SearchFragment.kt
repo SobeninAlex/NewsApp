@@ -2,18 +2,20 @@ package com.example.newsapp.ui.search
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.newsapp.R
 import com.example.newsapp.databinding.FragmentSearchBinding
+import com.example.newsapp.models.Article
 import com.example.newsapp.ui.adapters.ArticleAdapter
-import com.example.newsapp.ui.adapters.NewsAdapter
-import com.example.newsapp.ui.main.MainFragmentDirections
+import com.example.newsapp.ui.adapters.NewsActionClickListener
+import com.example.newsapp.ui.adapters.OnImageListener
 import com.example.newsapp.utils.Constants.Companion.TAG
 import com.example.newsapp.utils.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,7 +31,9 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel by viewModels<SearchViewModel>()
-    private lateinit var newsAdapter: ArticleAdapter
+
+    private lateinit var articleAdapter: ArticleAdapter
+    private lateinit var articleList: List<Article>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,12 +53,33 @@ class SearchFragment : Fragment() {
     }
 
     private fun initAdapter() {
-        newsAdapter = ArticleAdapter { article ->
-            val action = SearchFragmentDirections
-                .actionSearchFragmentToDetailsFragment(article)
-            findNavController().navigate(action)
+        articleAdapter = ArticleAdapter(object : NewsActionClickListener {
+            override fun onFavoriteClick(article: Article) {
+                if (articleList.contains(article)) {
+                    viewModel.deleteArticle(article)
+                } else {
+                    viewModel.saveArticle(article)
+                }
+            }
+
+            override fun onArticleClick(article: Article) {
+                val action = SearchFragmentDirections
+                    .actionSearchFragmentToDetailsFragment(article)
+                findNavController().navigate(action)
+            }
+        })
+
+        binding.recyclerView.adapter = articleAdapter
+
+        articleAdapter.onImageListener = object : OnImageListener {
+            override fun setImage(article: Article, imageView: ImageView) {
+                if (articleList.contains(article)) {
+                    imageView.setImageResource(R.drawable.icon_favorite_added)
+                } else {
+                    imageView.setImageResource(R.drawable.icon_heart)
+                }
+            }
         }
-        binding.recyclerView.adapter = newsAdapter
     }
 
     private fun viewModelObserver() {
@@ -66,7 +91,7 @@ class SearchFragment : Fragment() {
                 is NetworkResult.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     response.data?.let {
-                        newsAdapter.differ.submitList(it.articles)
+                        articleAdapter.differ.submitList(it.articles)
                     }
                 }
                 is NetworkResult.Error -> {
@@ -75,6 +100,10 @@ class SearchFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        viewModel.allFavoriteArticles.observe(viewLifecycleOwner) {
+            articleList = it
         }
     }
 

@@ -1,30 +1,38 @@
 package com.example.newsapp.ui.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.newsapp.R
 import com.example.newsapp.databinding.ItemArticleBinding
 import com.example.newsapp.models.Article
 
 class ArticleAdapter(
-    private val clickListener: (Article) -> Unit,
-) : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>() {
+    private val listener: NewsActionClickListener
+) : RecyclerView.Adapter<ArticleAdapter.ArticleViewHolder>(), View.OnClickListener {
 
-    inner class ArticleViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(article: Article) {
-            with(binding) {
-                Glide.with(itemView)
-                    .load(article.urlToImage)
-                    .into(articleImage)
-                articleImage.clipToOutline = true
-                articleDate.text = article.publishedAt
-                articleTitle.text = article.title
+    lateinit var onImageListener: OnImageListener
+
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onClick(view: View) {
+        val article = view.tag as Article
+        when (view.id) {
+            R.id.icon_heart_item -> {
+                listener.onFavoriteClick(article)
+                notifyDataSetChanged()
             }
+            else -> listener.onArticleClick(article)
         }
     }
+
+    inner class ArticleViewHolder(val binding: ItemArticleBinding)
+        : RecyclerView.ViewHolder(binding.root)
+
 
     private val callback = object : DiffUtil.ItemCallback<Article>() {
         override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
@@ -39,9 +47,14 @@ class ArticleAdapter(
     val differ = AsyncListDiffer(this, callback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder {
-        return ArticleViewHolder(
-            ItemArticleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        )
+        val inflater = LayoutInflater.from(parent.context)
+        val binding = ItemArticleBinding
+            .inflate(inflater, parent, false)
+
+        binding.root.setOnClickListener(this)
+        binding.iconHeartItem.setOnClickListener(this)
+
+        return ArticleViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
@@ -49,15 +62,23 @@ class ArticleAdapter(
     }
 
     override fun onBindViewHolder(holder: ArticleViewHolder, position: Int) {
-        val item = differ.currentList[position]
+        val article = differ.currentList[position]
 
-        holder.itemView.setOnClickListener {
-            clickListener(item)
+        with(holder.binding) {
+            holder.itemView.tag = article
+            iconHeartItem.tag = article
+
+            Glide.with(articleImage.context)
+                .load(article.urlToImage)
+                .placeholder(R.drawable.icon_newspaper)
+                .into(articleImage)
+            articleImage.clipToOutline = true
+
+            articleDate.text = article.publishedAt
+            articleTitle.text = article.title
+
+            onImageListener.setImage(article, iconHeartItem)
         }
-
-        holder.bind(item)
-
-
     }
 
 }
