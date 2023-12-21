@@ -1,5 +1,6 @@
 package com.example.newsapp.ui.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,7 @@ class NewsAdapter(
 
     lateinit var onImageListener: OnImageListener
 
+    @SuppressLint("NotifyDataSetChanged")
     override fun onClick(view: View) {
         val article = view.tag as Article
         when (view.id) {

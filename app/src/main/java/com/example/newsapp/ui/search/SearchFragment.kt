@@ -2,12 +2,12 @@ package com.example.newsapp.ui.search
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.newsapp.R
@@ -15,10 +15,7 @@ import com.example.newsapp.databinding.FragmentSearchBinding
 import com.example.newsapp.models.Article
 import com.example.newsapp.ui.adapters.ArticleAdapter
 import com.example.newsapp.ui.adapters.NewsActionClickListener
-import com.example.newsapp.ui.adapters.NewsAdapter
 import com.example.newsapp.ui.adapters.OnImageListener
-import com.example.newsapp.ui.favorite.FavoriteFragmentDirections
-import com.example.newsapp.ui.main.MainFragmentDirections
 import com.example.newsapp.utils.Constants.Companion.TAG
 import com.example.newsapp.utils.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint

@@ -5,7 +5,6 @@ import androidx.paging.PagingConfig
 import com.example.newsapp.data.api.NewsService
 import com.example.newsapp.data.database.ArticleDao
 import com.example.newsapp.models.Article
-import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 class NewsRepository @Inject constructor(
